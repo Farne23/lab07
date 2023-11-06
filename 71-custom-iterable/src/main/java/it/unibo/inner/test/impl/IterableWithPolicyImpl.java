@@ -20,17 +20,32 @@ import it.unibo.inner.api.IterableWithPolicy;
 public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
 
     ArrayList<T> iterableElement;
+    Predicate<T> filter;
  
     /**
      * Constructor of IterablePolicyImpl
      * @param array The T array passed as a parameter is copied, so that the original one cannot be changed 
      */
     public IterableWithPolicyImpl(final T[] array){
-        iterableElement = new ArrayList<T>(Arrays.asList(array));
+        this(array,new Predicate<T>() {
+
+            @Override
+            public boolean test(T t) {
+                // TODO Auto-generated method stub
+                return true;
+            }
+            
+        });
     }
 
+    /**
+     * Constructor with a policy specification
+     * @param array
+     * @param filter A predicat object wich will work as a filter
+     */
     public IterableWithPolicyImpl(final T[] array, Predicate<T> filter){
         iterableElement = new ArrayList<T>(Arrays.asList(array));
+        this.filter = filter;
     }
 
     /**
@@ -46,8 +61,7 @@ public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
      */
     @Override
     public void setIterationPolicy(Predicate filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setIterationPolicy'");
+        this.filter = filter;
     }
 
     /**
@@ -72,6 +86,9 @@ public class IterableWithPolicyImpl<T> implements IterableWithPolicy<T>{
          */
         @Override
         public boolean hasNext() {
+            while(current<iterableElement.size() && !filter.test(iterableElement.get(current))){
+                current++;
+            }
             return(current < iterableElement.size());
         }
 
